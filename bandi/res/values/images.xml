@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="image_index">
+        <item>cover0_59</item>
+        <item>cover60_149</item>
+        <item>cover150_241</item>
+        <item>cover242</item>
+        <item>credit</item>
+    </string-array>    
+</resources>

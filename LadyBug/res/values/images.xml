@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="image_index">
+        <item>img01</item>
+        <item>img02</item>
+        <item>img03</item>
+        <item>img04</item>
+        <item>img05</item>
+        <item>img06</item>
+        <item>img07</item>
+        <item>img08</item>
+        <item>credit</item>
+    </string-array>    
+</resources>

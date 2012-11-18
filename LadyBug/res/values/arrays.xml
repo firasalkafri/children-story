@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="audio_time_index">
+        <item>1000</item>
+        <item>15000</item>
+        <item>91000</item>
+        <item>170000</item>
+        <item>237000</item>
+        <item>243000</item>
+        <item>296000</item>
+        <item>340000</item>
+        <item>365000</item>
+    </integer-array>
+</resources>

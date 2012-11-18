@@ -1,0 +1,23 @@
+<resources>
+
+    <string name="activity_main_title">작은별 이야기</string>
+    <string name="activity_credit_title">참여자들</string>
+    <string name="activity_help_title">도움말</string>
+    <string name="app_name">LittleStar</string>
+    <string name="menu_credit">참여자들</string>
+    <string name="menu_help">도움말</string>
+    <string name="help_string">왼쪽으로 터치하면 앞으로 재생, 오른쪽으로 터치하면 뒤로 재생, 위로 터치하면 소리키움, 아래로 터치하면 소리줄임 기능을 사용하실 수 있습니다.</string>
+    <string name="help_string2">옵션의 도움말 메뉴에서 조작에 대하여 자세히 확인하실수있습니다.</string>
+    
+    <string name="screen_main">메인화면</string>
+    <string name="text_tab_to_play">두드리면 재생됩니다!</string>
+    <string name="text_double_back_tab">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="text_pause">일시중지(Pause)</string>
+    <string name="text_play">재생(Play)</string>
+    <string name="text_volume_up">소리 키움(Volume Up)</string>
+    <string name="text_volume_down">소리 줄임(Volume Down)</string>
+    <string name="text_rewind">되돌리기(Rewind)</string>
+    <string name="text_fast_foward">빠르게 돌리기(Fast-Foward)</string>
+    <string name="title_activity_credit">참여자들</string>
+
+</resources>
