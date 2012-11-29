@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -31,23 +33,27 @@ import com.someday.story.grandmom.listener.MySeekBarChangeListener;
 import com.someday.story.grandmom.util.AudioUtils;
 
 public class MainActivity extends Activity {
-    
     private static final String LOG_TAG = MainActivity.class.getName();
+    private static final long[] VIBRATE_FORWARD = new long[]{100,100,100,100};
+    private static final long[] VIBRATE_BACKWARD = new long[]{100,100,100,100,100,100};
+    private static final long   VIBRATE_PAUSE = 300;
+    private static final long   VIBRATE_START = 100;
     
+	
     private boolean enableBackButton = false;
     
     private LinearLayout main;
     private TextView console;
-    private SeekBar sb;
+    private SeekBar seekBar;
 
     private GestureDetector gestureDetector;
     
-   
     public static final int CHANGE_BACKGROUND = 1;
     public static final int DISPLAY_ON_REPLAY_BTN = 2;
 
     private MediaPlayer mediaPlayer;
     protected AudioManager audioManager;
+    private Vibrator vibrator;
     
     private static int[] audioTimeIndex;
     private static String[] imageIndex;
@@ -57,16 +63,13 @@ public class MainActivity extends Activity {
     private Toast toast;
     
     private Handler handler = new BackgroundChangeHandler(this);
-    
-//    private float firstX;
-//    private float firstY;
-//    private long lastActionTime;
+
     private float mDensity;
 
     void handleMessage(Message msg) {
         final long currentPosition = mediaPlayer.getCurrentPosition();
         
-        sb.setProgress((int)currentPosition);
+        seekBar.setProgress((int)currentPosition);
         
         for (int idx = audioTimeIndex.length - 1; idx >= 0; idx--) {
             if (currentPosition > audioTimeIndex[idx]) {
@@ -94,18 +97,18 @@ public class MainActivity extends Activity {
     
     public void replay() {
         mediaPlayer.seekTo(0);
-        sb.setProgress(0);
+        seekBar.setProgress(0);
     }
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
         Toast.makeText(getApplicationContext(), getString(R.string.activity_main_title), Toast.LENGTH_SHORT).show();
         
         super.onCreate(savedInstanceState);
         
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mediaPlayer = createMediaPlayer(R.raw.grandma);
+        vibrator = (Vibrator)getSystemService(Service.VIBRATOR_SERVICE);
         
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -132,16 +135,16 @@ public class MainActivity extends Activity {
         console.setTextColor(Color.GRAY);
         console.setTextSize(30);
         
-        sb = new SeekBar(this);
-        sb.setMax(mediaPlayer.getDuration());
+        seekBar = new SeekBar(this);
+        seekBar.setMax(mediaPlayer.getDuration());
         LayoutParams sbParams = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
         sbParams.gravity = Gravity.BOTTOM;
-        sb.setLayoutParams(sbParams);
-        sb.setBackgroundColor(Color.TRANSPARENT);
-        sb.setOnSeekBarChangeListener(new MySeekBarChangeListener(this.mediaPlayer));
-        sb.setVisibility(SeekBar.INVISIBLE);
+        seekBar.setLayoutParams(sbParams);
+        seekBar.setBackgroundColor(Color.TRANSPARENT);
+        seekBar.setOnSeekBarChangeListener(new MySeekBarChangeListener(this.mediaPlayer));
+        seekBar.setVisibility(SeekBar.INVISIBLE);
         main.addView(console);
-        main.addView(sb);
+        main.addView(seekBar);
         
         setContentView(main);
         
@@ -220,32 +223,6 @@ public class MainActivity extends Activity {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//    	switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                firstX = event.getX();
-//                firstY = event.getY();
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                toast.cancel();
-//                
-//                if (lastActionTime + MIN_ACTION_DELAY > System.currentTimeMillis()) break;
-//                int jumpDistance;
-//                
-//                if(lastActionTime + ACCELETE_ACTION_DELAY > System.currentTimeMillis()) jumpDistance = SHORT_JUMP_DISTANCE;
-//                else jumpDistance = LONG_JUMP_DISTANCE;
-//                
-//                int currentPosition = mp.getCurrentPosition();
-//                
-//                if (event.getX() - firstX > MIN_ACTION_X_DISTANCE) fastForward(currentPosition, jumpDistance);
-//                else if (event.getX() - firstX < -MIN_ACTION_X_DISTANCE) rewind(currentPosition, jumpDistance);
-//                else if (event.getY() - firstY < -MIN_ACTION_Y_DISTANCE) volumnUp();
-//                else if (event.getY() - firstY > MIN_ACTION_Y_DISTANCE) volumnDown();
-//                
-//                lastActionTime = System.currentTimeMillis();
-//                toast.show();
-//                
-//                break;
-//        }
         return gestureDetector.onTouchEvent(event);
     }
 
@@ -261,29 +238,32 @@ public class MainActivity extends Activity {
     }
 
     public void rewind(int currentPosition, int jumpDistance) {
+    	vibrator.vibrate(VIBRATE_BACKWARD,-1);   
     	toast.cancel();
         if (currentPosition >= jumpDistance){
             mediaPlayer.seekTo(currentPosition - jumpDistance);
-            sb.setProgress(currentPosition - jumpDistance);
+            seekBar.setProgress(currentPosition - jumpDistance);
         }else{
             mediaPlayer.seekTo(0);
-            sb.setProgress(0);
+            seekBar.setProgress(0);
         } 
         toast.setText(getString(R.string.text_rewind));
 		toast.show();
     }
     
     public void fastForward(int currentPosition, int jumpDistance) {
-        if (currentPosition + jumpDistance < mediaPlayer.getDuration()) {
+    	 if (currentPosition + jumpDistance < mediaPlayer.getDuration()) {
+    		vibrator.vibrate(VIBRATE_FORWARD,-1);   
         	toast.cancel();
             mediaPlayer.seekTo(currentPosition + jumpDistance);
-            sb.setProgress(currentPosition + jumpDistance);
+            seekBar.setProgress(currentPosition + jumpDistance);
             toast.setText(getString(R.string.text_fast_foward));
     		toast.show();
         }
     }
     
     public void volumnUp() {
+    	vibrator.vibrate(200);
     	toast.cancel();
         AudioUtils.volumeUp(audioManager);
         toast.setText(getString(R.string.text_volume_up));
@@ -291,6 +271,7 @@ public class MainActivity extends Activity {
     }
     
     public void volumnDown() {
+    	vibrator.vibrate(200);
     	toast.cancel();
         AudioUtils.volumeDown(audioManager);
         toast.setText(getString(R.string.text_volume_down));
@@ -298,17 +279,19 @@ public class MainActivity extends Activity {
     }
 
     public void mediaPause(){
+    	vibrator.vibrate(VIBRATE_PAUSE);
     	toast.cancel();
-    	this.mediaPause();
+    	this.mediaPlayer.pause();
     	console.setText(getString(R.string.text_pause));
     	toast.setText(getString(R.string.text_pause));
     	toast.show();
     }
     
     public void mediaStart(){
+    	vibrator.vibrate(VIBRATE_START);
     	toast.cancel();
-    	this.mediaStart();
-    	sb.setVisibility(SeekBar.VISIBLE);
+    	this.mediaPlayer.start();
+    	seekBar.setVisibility(SeekBar.VISIBLE);
     	console.setText(getString(R.string.text_play));
       	toast.setText(getString(R.string.text_play));
       	toast.show();
